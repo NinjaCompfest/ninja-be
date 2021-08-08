@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start" : "nodemon index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NinjaCompfest/ninja-be.git"
   },
-  "author": "",
+  "author": "Ryan Gani and Nicholas Biantoro",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/NinjaCompfest/ninja-be/issues"
