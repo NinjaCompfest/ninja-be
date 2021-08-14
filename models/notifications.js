@@ -15,7 +15,7 @@ const notificationSchema = new Schema({
             type: Number,
         },
     },
-    new_program: {
+    new_program_id: {
         type: Schema.Types.ObjectId,
         ref: "Program", //refer to the Program model
     },
