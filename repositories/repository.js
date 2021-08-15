@@ -6,3 +6,7 @@ class Repository {
         return users.User.find({ username });
     }
 }
+
+module.exports = {
+    Repository
+}

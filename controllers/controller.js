@@ -20,3 +20,7 @@ class Controller {
         res.json(response.body);
     }
 }
+
+module.exports = {
+    Controller,
+};

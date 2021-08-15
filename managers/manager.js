@@ -1,7 +1,6 @@
 const response = require("../dto/response");
 const httpStatusCode = require("http-status-codes");
 const bcrypt = require("bcryptjs");
-const { response } = require("express");
 
 class Manager {
     constructor(repository) {
@@ -33,4 +32,8 @@ class Manager {
         // TODO
         // return new response.ResponseDTO(httpStatusCode.StatusCodes.OK, user);
     }
+}
+
+module.exports= {
+    Manager
 }
