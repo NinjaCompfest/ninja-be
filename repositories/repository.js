@@ -2,8 +2,12 @@ const users = require("../models/users");
 
 class Repository {
     constructor() {}
-    getUserByUsername(username) {
-        return users.User.find({ username });
+    async getUserByUsername(username) {
+        const results = await users.find({ username }).exec();
+        if (results === []){
+            return undefined
+        }
+        return results[0]
     }
 }
 

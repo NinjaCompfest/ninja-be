@@ -6,12 +6,13 @@ class LoginRequestDTO {
 }
 
 class LoginResponseDTO {
-    constructor(token) {
+    constructor(user, token) {
+        this.user = user;
         this.token = token;
     }
 }
 
 module.exports = {
     LoginRequestDTO,
-    LoginResponseDTO
-}
+    LoginResponseDTO,
+};

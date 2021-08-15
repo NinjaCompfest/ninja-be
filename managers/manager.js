@@ -1,15 +1,17 @@
 const { ResponseDTO, ErrorMessage } = require("../dto/response");
 const httpStatusCode = require("http-status-codes");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { LoginResponseDTO } = require("../dto/login");
 
 class Manager {
     constructor(repository) {
         this.repository = repository;
     }
 
-    login(request) {
-        const user = this.repository.getUserByUsername(request.username);
-        if (user == null || user == undefined) {
+    async login(request) {
+        const user = await this.repository.getUserByUsername(request.username);
+        if (user === null || user === undefined) {
             const response = new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
                 null,
@@ -17,7 +19,6 @@ class Manager {
             );
             return response;
         }
-
         const isVerified = bcrypt.compareSync(request.password, user.password);
 
         if (!isVerified) {
@@ -29,8 +30,16 @@ class Manager {
             return response;
         }
 
-        // TODO
-        // return new ResponseDTO(httpStatusCode.StatusCodes.OK, user);
+        const maxAge = 24 * 60 * 60;
+        const jwtToken = jwt.sign({ user }, process.env.JWT_KEY, {
+            expiresIn: maxAge,
+        });
+
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            new LoginResponseDTO(user, jwtToken),
+            null
+        );
     }
 }
 
