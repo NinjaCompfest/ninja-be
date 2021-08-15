@@ -16,7 +16,7 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.json(response.body);
+        res.status(httpStatusCode.StatusCodes.OK).send(JSON.stringify(response.body));
     }
 }
 

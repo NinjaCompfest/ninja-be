@@ -11,6 +11,9 @@ class Manager {
 
     async login(request) {
         const user = await this.repository.getUserByUsername(request.username);
+        console.log("request", request)
+        console.log("manager, user", user)
+        
         if (user === null || user === undefined) {
             const response = new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
@@ -19,6 +22,7 @@ class Manager {
             );
             return response;
         }
+
         const isVerified = bcrypt.compareSync(request.password, user.password);
 
         if (!isVerified) {
