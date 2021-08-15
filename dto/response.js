@@ -11,3 +11,8 @@ class ErrorMessage {
         this.message = message;
     }
 }
+
+module.exports = {
+    ResponseDTO,
+    ErrorMessage
+}

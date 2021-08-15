@@ -5,8 +5,13 @@ class LoginRequestDTO {
     }
 }
 
-class LoginReponseDTO {
+class LoginResponseDTO {
     constructor(token) {
         this.token = token;
     }
+}
+
+module.exports = {
+    LoginRequestDTO,
+    LoginResponseDTO
 }

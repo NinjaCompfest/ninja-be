@@ -1,4 +1,4 @@
-const response = require("../dto/response");
+const { ResponseDTO, ErrorMessage } = require("../dto/response");
 const httpStatusCode = require("http-status-codes");
 const bcrypt = require("bcryptjs");
 
@@ -10,10 +10,10 @@ class Manager {
     login(request) {
         const user = this.repository.getUserByUsername(request.username);
         if (user == null || user == undefined) {
-            const response = new response.ResponseDTO(
+            const response = new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
                 null,
-                new response.ErrorMessage("user not found")
+                new ErrorMessage("user not found")
             );
             return response;
         }
@@ -21,19 +21,19 @@ class Manager {
         const isVerified = bcrypt.compareSync(request.password, user.password);
 
         if (!isVerified) {
-            const response = new response.ResponseDTO(
+            const response = new ResponseDTO(
                 httpStatusCode.StatusCodes.UNAUTHORIZED,
                 null,
-                new response.ErrorMessage("username or password is wrong")
+                new ErrorMessage("username or password is wrong")
             );
             return response;
         }
 
         // TODO
-        // return new response.ResponseDTO(httpStatusCode.StatusCodes.OK, user);
+        // return new ResponseDTO(httpStatusCode.StatusCodes.OK, user);
     }
 }
 
-module.exports= {
-    Manager
-}
+module.exports = {
+    Manager,
+};
