@@ -30,6 +30,7 @@ class Manager {
             return response;
         }
 
+        user.password = undefined;
         const maxAge = 24 * 60 * 60;
         const jwtToken = jwt.sign({ user }, process.env.JWT_KEY, {
             expiresIn: maxAge,

@@ -7,7 +7,7 @@ const manager = new Manager(repository);
 const controller = new Controller(manager);
 
 async function login(req, res) {
-    controller.login(req, res);
+    await controller.login(req, res);
 }
 
 module.exports = {
