@@ -7,6 +7,7 @@ const manager = new Manager(repository);
 const controller = new Controller(manager);
 
 async function login(req, res) {
+    console.info("POST - /login")
     await controller.login(req, res);
 }
 

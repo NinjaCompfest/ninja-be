@@ -19,5 +19,5 @@ app.use(express.urlencoded({ extended: true }));
 app.post("/login", login);
 
 app.listen(port, () => {
-    console.log(`NINJA-BE is running on port: ${port}`);
-});
+    console.log(`ready - NINJA-BE is running on http://localhost:${port}`);
+})
