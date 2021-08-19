@@ -15,6 +15,11 @@ async function login(req, res) {
     await controller.login(req, res);
 }
 
+async function homepage(req, res) {
+    console.info("GET - /homepage");
+    await controller.homepage(req, res);
+}
+
 async function getProgramById(req, res) {
     console.info(`GET - /programs/${req.params.id}`);
     await controller.getProgramById(req, res);
@@ -23,6 +28,6 @@ async function getProgramById(req, res) {
 module.exports = {
     register,
     login,
-    getProgramById
+    homepage,
+    getProgramById,
 };
-
