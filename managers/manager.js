@@ -82,6 +82,23 @@ class Manager {
             null
         );
     }
+
+    async getProgramById(request) {
+        const programs = await this.repository.getProgramById(request.id);
+        if (programs === null || programs === undefined) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.NOT_FOUND,
+                null,
+                new ErrorMessage("program not found")
+            );
+        }
+        
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            programs,
+            null
+        )
+    }
 }
 
 module.exports = {
