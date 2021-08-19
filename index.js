@@ -3,6 +3,7 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 
 const express = require("express");
+const cors = require('cors')
 const bodyParser = require("body-parser");
 
 const { login, register, getProgramById, homepage } = require("./routes");
@@ -14,8 +15,9 @@ connectDB();
 const app = express();
 const port = 3000;
 
-app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())
+app.use(bodyParser.json());
 
 app.post("/register", register);
 app.post("/login", login);
