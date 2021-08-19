@@ -1,6 +1,7 @@
 const httpStatusCode = require("http-status-codes");
 const { LoginRequestDTO } = require("../dto/login");
 const { RegisterRequestDTO } = require("../dto/register");
+const { ProgramsRequestDTO } = require("../dto/programs");
 
 class Controller {
     constructor(manager) {
@@ -31,6 +32,19 @@ class Controller {
         const request = new LoginRequestDTO(body.username, body.password);
 
         const response = await this.manager.login(request);
+        if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
+            res.status(response.statusCode).json(response.errorMessage);
+            return;
+        }
+        res.status(httpStatusCode.StatusCodes.OK).send(
+            JSON.stringify(response.body)
+        );
+    }
+
+    // programs
+    async getProgramById(req, res) {
+        const request = new ProgramsRequestDTO(req.params.id);
+        const response = await this.manager.getProgramById(request);
         if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
             res.status(response.statusCode).json(response.errorMessage);
             return;

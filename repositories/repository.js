@@ -1,4 +1,5 @@
 const users = require("../models/users");
+const programs = require("../models/programs")
 
 class Repository {
     constructor() {}
@@ -24,6 +25,14 @@ class Repository {
             return undefined;
         }
         return results[0];
+    }
+
+    async getProgramById(id){
+        const results = await programs.find({id}).exec()
+        if (results === []){
+            return undefined
+        }
+        return results[0]
     }
 }
 
