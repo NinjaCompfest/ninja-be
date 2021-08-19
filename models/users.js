@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    fullname: {
+    full_name: {
         type: String,
         required: true,
     },
@@ -17,7 +17,7 @@ const userSchema = new Schema({
     role: {
         type: String,
         required: true,
-        enum: ["admin", "donator", "fundraiser"],
+        enum: ["ADMIN", "DONOR", "FUNDRAISER"],
     },
     balance: {
         type: Number,

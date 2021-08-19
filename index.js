@@ -5,7 +5,7 @@ const connectDB = require("./config/db");
 const express = require("express");
 const bodyParser =require("body-parser")
 
-const { login } = require("./routes");
+const { login, register } = require("./routes");
 
 //MongoDB Atlas Connection
 connectDB();
@@ -16,6 +16,7 @@ const port = 3000;
 app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }));
 
+app.post("/register", register)
 app.post("/login", login);
 
 app.listen(process.env.PORT || port, () => {
