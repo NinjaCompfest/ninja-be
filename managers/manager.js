@@ -83,6 +83,40 @@ class Manager {
         );
     }
 
+    async homepage(request) {
+        switch (request.user.user.role) {
+            case "DONOR":
+                const verifiedPrograms =
+                    await this.repository.getVerifiedPrograms();
+                if (
+                    verifiedPrograms === null ||
+                    verifiedPrograms === undefined
+                ) {
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.NOT_FOUND,
+                        null,
+                        new ErrorMessage("There is no verified Programs found")
+                    );
+                }
+
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.OK,
+                    verifiedPrograms,
+                    null
+                );
+
+            // case "FUNDRAISER":
+            //     break;
+
+            default:
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.NOT_FOUND,
+                    null,
+                    new ErrorMessage("There is no verified Programs found")
+                );
+        }
+    }
+
     async getProgramById(request) {
         const programs = await this.repository.getProgramById(request.id);
         if (programs === null || programs === undefined) {
@@ -92,12 +126,8 @@ class Manager {
                 new ErrorMessage("program not found")
             );
         }
-        
-        return new ResponseDTO(
-            httpStatusCode.StatusCodes.OK,
-            programs,
-            null
-        )
+
+        return new ResponseDTO(httpStatusCode.StatusCodes.OK, programs, null);
     }
 }
 
