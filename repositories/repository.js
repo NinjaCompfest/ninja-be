@@ -79,6 +79,10 @@ class Repository {
         }
         return user;
     }
+
+    async addProgram(newProgram) {
+        await newProgram.save();
+    }
 }
 
 module.exports = {
