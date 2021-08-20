@@ -42,7 +42,6 @@ const userRouter = express.Router();
 userRouter.put("/:id/topup", topup);
 app.use("/users", userRouter);
 
-// fundraiser create program
 app.post("/:id/programs", checkAuth, addProgram);
 
 app.listen(process.env.PORT || port, () => {

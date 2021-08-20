@@ -46,7 +46,6 @@ class Repository {
         return pastDonations;
     }
 
-    // Programs
     async getVerifiedPrograms() {
         const results = await Program.find({ isVerified: true })
             .select({ _id: 0, title: 1, collected_amount: 1 })

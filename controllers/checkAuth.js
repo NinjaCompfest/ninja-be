@@ -10,7 +10,6 @@ const checkAuth = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_KEY, (err, user) => {
         if (err) {
-            console.log(err);
             return res.sendStatus(httpStatusCode.StatusCodes.FORBIDDEN);
         }
         req.user = user;
