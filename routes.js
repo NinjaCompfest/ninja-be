@@ -46,4 +46,5 @@ module.exports = {
     dashboard,
     getProgramById,
     topup,
+    addProgram,
 };

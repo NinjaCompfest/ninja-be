@@ -180,16 +180,7 @@ class Manager {
     }
 
     async addProgram(request) {
-        const { title, description, id } = request;
-        const newProgram = new Program({
-            title,
-            description,
-            collected_amount: 0,
-            fundraiser_id: id,
-            isVerified: false,
-        });
-
-        await this.repository.addProgram(newProgram);
+        const newProgram = await this.repository.addProgram(request);
         return new ResponseDTO(httpStatusCode.StatusCodes.OK, newProgram, null);
     }
 }

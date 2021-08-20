@@ -1,15 +1,15 @@
-const users = require("../models/users");
-const programs = require("../models/programs");
+const User = require("../models/users");
+const Program = require("../models/programs");
 
 class Repository {
     constructor() {}
 
     async addUserAndRole(registerRequestDTO) {
-        const existingUsers = await users
-            .find({ username: registerRequestDTO["username"] })
-            .exec();
+        const existingUsers = await User.find({
+            username: registerRequestDTO["username"],
+        }).exec();
         if (existingUsers.length === 0) {
-            const newUser = await users.create(registerRequestDTO);
+            const newUser = await User.create(registerRequestDTO);
             return { ...newUser }._doc;
         } else {
             console.error(
@@ -20,7 +20,7 @@ class Repository {
     }
 
     async getUserByUsername(username) {
-        const results = await users.find({ username }).exec();
+        const results = await User.find({ username }).exec();
         if (results.length === 0) {
             return undefined;
         }
@@ -28,7 +28,7 @@ class Repository {
     }
 
     async getPastDonations(id) {
-        const pastDonations = await programs.aggregate([
+        const pastDonations = await Program.aggregate([
             { $unwind: "$donators" },
             { $match: { "donators.donator_id": id } },
             {
@@ -48,8 +48,7 @@ class Repository {
 
     // Programs
     async getVerifiedPrograms() {
-        const results = await programs
-            .find({ isVerified: true })
+        const results = await Program.find({ isVerified: true })
             .select({ _id: 0, title: 1, collected_amount: 1 })
             .exec();
         if (results.length === 0) {
@@ -59,7 +58,7 @@ class Repository {
     }
 
     async getProgramById(id) {
-        const result = await programs.findById(id).exec();
+        const result = await Program.findById(id).exec();
         if (result === null) {
             return undefined;
         }
@@ -67,21 +66,28 @@ class Repository {
     }
 
     async topupById(userId, amount) {
-        const user = await users
-            .findOneAndUpdate(
-                { _id: userId },
-                { $inc: { balance: amount } },
-                { new: true }
-            )
-            .exec();
+        const user = await User.findOneAndUpdate(
+            { _id: userId },
+            { $inc: { balance: amount } },
+            { new: true }
+        ).exec();
         if (user === null) {
             return undefined;
         }
         return user;
     }
 
-    async addProgram(newProgram) {
+    async addProgram(request) {
+        const { title, description, id } = request;
+        const newProgram = new Program({
+            title,
+            description,
+            collected_amount: 0,
+            fundraiser_id: id,
+            isVerified: false,
+        });
         await newProgram.save();
+        return newProgram;
     }
 }
 

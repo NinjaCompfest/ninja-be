@@ -2,12 +2,6 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
-// Models
-const Program = require("./models/programs");
-const Donation = require("./models/donations");
-const Notification = require("./models/notifications");
-const User = require("./models/users");
-
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -49,7 +43,7 @@ userRouter.put("/:id/topup", topup);
 app.use("/users", userRouter);
 
 // fundraiser create program
-app.post("/:id/programs", addProgram);
+app.post("/:id/programs", checkAuth, addProgram);
 
 app.listen(process.env.PORT || port, () => {
     console.log(`ready - NINJA-BE is running on http://localhost:${port}`);

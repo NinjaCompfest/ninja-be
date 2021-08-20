@@ -4,11 +4,15 @@ const httpStatusCode = require("http-status-codes");
 const checkAuth = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    if (token == null)
+    if (token === null) {
         return res.sendStatus(httpStatusCode.StatusCodes.UNAUTHORIZED);
+    }
 
     jwt.verify(token, process.env.JWT_KEY, (err, user) => {
-        if (err) return res.sendStatus(httpStatusCode.StatusCodes.FORBIDDEN);
+        if (err) {
+            console.log(err);
+            return res.sendStatus(httpStatusCode.StatusCodes.FORBIDDEN);
+        }
         req.user = user;
         next();
     });
