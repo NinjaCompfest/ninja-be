@@ -3,7 +3,7 @@ const { LoginRequestDTO } = require("../dto/login");
 const { RegisterRequestDTO } = require("../dto/register");
 const { HomepageRequestDTO } = require("../dto/homepage");
 const { DashboardRequestDTO } = require("../dto/dashboard");
-const { ProgramsRequestDTO } = require("../dto/programs");
+const { ProgramsRequestDTO, AddProgramRequestDTO } = require("../dto/programs");
 const { TopupRequestDTO } = require("../dto/topup");
 
 class Controller {
@@ -25,9 +25,7 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JSON.stringify(response.body)
-        );
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 
     async login(req, res) {
@@ -39,9 +37,7 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JSON.stringify(response.body)
-        );
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 
     async homepage(req, res) {
@@ -51,9 +47,7 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JSON.stringify(response.body)
-        );
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 
     async dashboard(req, res) {
@@ -63,9 +57,7 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JSON.stringify(response.body)
-        );
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 
     async getProgramById(req, res) {
@@ -75,21 +67,31 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JSON.stringify(response.body)
-        );
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 
     async topup(req, res) {
         const request = new TopupRequestDTO(req.params.id, req.body.amount);
         const response = await this.manager.topup(request);
-        if (response.StatusCode !== httpStatusCode.StatusCodes.OK) {
+        if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JOSN.stringify(response.body)
-        );
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
+    }
+
+    async addProgram(req, res) {
+        const { id } = req.params; //fundraiser (USER) id
+        const { title, description } = req.body;
+        const request = new AddProgramRequestDTO(title, description, id);
+        const response = await this.manager.addProgram(request);
+        console.log(response);
+        if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
+            res.status(response.statusCode).json(response.errorMessage);
+            return;
+        }
+        console.log("res body", response.body);
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 }
 

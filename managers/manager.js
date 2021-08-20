@@ -178,6 +178,16 @@ class Manager {
 
         return new ResponseDTO(httpStatusCode.StatusCodes.OK, null, null);
     }
+
+    async addProgram(request) {
+        const { title, description, id } = request;
+        const newProgram = await this.repository.addProgram(
+            title,
+            description,
+            id
+        );
+        return new ResponseDTO(httpStatusCode.StatusCodes.OK, newProgram, null);
+    }
 }
 
 module.exports = {

@@ -13,6 +13,7 @@ const {
     homepage,
     dashboard,
     topup,
+    addProgram,
 } = require("./routes");
 const { checkAuth } = require("./controllers/checkAuth");
 
@@ -40,6 +41,8 @@ app.use("/programs", programRouter);
 const userRouter = express.Router();
 userRouter.put("/:id/topup", topup);
 app.use("/users", userRouter);
+
+app.post("/:id/programs", checkAuth, addProgram);
 
 app.listen(process.env.PORT || port, () => {
     console.log(`ready - NINJA-BE is running on http://localhost:${port}`);
