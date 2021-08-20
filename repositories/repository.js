@@ -65,6 +65,20 @@ class Repository {
         }
         return result;
     }
+
+    async topupById(userId, amount) {
+        const user = await users
+            .findOneAndUpdate(
+                { _id: userId },
+                { $inc: { balance: amount } },
+                { new: true }
+            )
+            .exec();
+        if (user === null) {
+            return undefined;
+        }
+        return user;
+    }
 }
 
 module.exports = {

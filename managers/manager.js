@@ -120,10 +120,9 @@ class Manager {
     async dashboard(request) {
         switch (request.user.user.role) {
             case "DONOR":
-                const myPastDonations =
-                    await this.repository.getPastDonations(
-                        request.user.user._id
-                    );
+                const myPastDonations = await this.repository.getPastDonations(
+                    request.user.user._id
+                );
 
                 if (myPastDonations === null || myPastDonations === undefined) {
                     return new ResponseDTO(
@@ -162,6 +161,22 @@ class Manager {
         }
 
         return new ResponseDTO(httpStatusCode.StatusCodes.OK, programs, null);
+    }
+
+    async topup(request) {
+        const newBalance = await this.repository.topupById(
+            request.userId,
+            request.amount
+        );
+        if (newBalance === null || newBalance === undefined) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.NOT_FOUND,
+                null,
+                new ErrorMessage("topup failed")
+            );
+        }
+
+        return new ResponseDTO(httpStatusCode.StatusCodes.OK, null, null);
     }
 }
 

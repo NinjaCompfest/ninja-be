@@ -4,6 +4,7 @@ const { RegisterRequestDTO } = require("../dto/register");
 const { HomepageRequestDTO } = require("../dto/homepage");
 const { DashboardRequestDTO } = require("../dto/dashboard");
 const { ProgramsRequestDTO } = require("../dto/programs");
+const { TopupRequestDTO } = require("../dto/topup");
 
 class Controller {
     constructor(manager) {
@@ -67,7 +68,6 @@ class Controller {
         );
     }
 
-    // programs
     async getProgramById(req, res) {
         const request = new ProgramsRequestDTO(req.params.id);
         const response = await this.manager.getProgramById(request);
@@ -77,6 +77,18 @@ class Controller {
         }
         res.status(httpStatusCode.StatusCodes.OK).send(
             JSON.stringify(response.body)
+        );
+    }
+
+    async topup(req, res) {
+        const request = new TopupRequestDTO(req.params.id, req.body.amount);
+        const response = await this.manager.topup(request);
+        if (response.StatusCode !== httpStatusCode.StatusCodes.OK) {
+            res.status(response.statusCode).json(response.errorMessage);
+            return;
+        }
+        res.status(httpStatusCode.StatusCodes.OK).send(
+            JOSN.stringify(response.body)
         );
     }
 }

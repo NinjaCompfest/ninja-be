@@ -30,10 +30,16 @@ async function getProgramById(req, res) {
     await controller.getProgramById(req, res);
 }
 
+async function topup(req, res){
+    console.info(`PUT - /users/${req.params.id}/topup`)
+    await controller.topup(req, res)
+}
+
 module.exports = {
     register,
     login,
     homepage,
     dashboard,
     getProgramById,
+    topup
 };
