@@ -35,7 +35,7 @@ app.post("/:id/programs", async (req, res) => {
     const { id } = req.params; //fundraiser (USER) id
 
     const { title, description } = req.body;
-
+    console.log(req.body);
     const newProgram = new Program({
         title,
         description,
