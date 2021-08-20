@@ -76,8 +76,7 @@ class Repository {
         return user;
     }
 
-    async addProgram(request) {
-        const { title, description, id } = request;
+    async addProgram(title, description, id) {
         const newProgram = new Program({
             title,
             description,
