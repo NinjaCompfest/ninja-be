@@ -2,6 +2,7 @@ const httpStatusCode = require("http-status-codes");
 const { LoginRequestDTO } = require("../dto/login");
 const { RegisterRequestDTO } = require("../dto/register");
 const { HomepageRequestDTO } = require("../dto/homepage");
+const { DashboardRequestDTO } = require("../dto/dashboard");
 const { ProgramsRequestDTO } = require("../dto/programs");
 
 class Controller {
@@ -45,6 +46,18 @@ class Controller {
     async homepage(req, res) {
         const request = new HomepageRequestDTO(req.user);
         const response = await this.manager.homepage(request);
+        if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
+            res.status(response.statusCode).json(response.errorMessage);
+            return;
+        }
+        res.status(httpStatusCode.StatusCodes.OK).send(
+            JSON.stringify(response.body)
+        );
+    }
+
+    async dashboard(req, res) {
+        const request = new DashboardRequestDTO(req.user);
+        const response = await this.manager.dashboard(request);
         if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
             res.status(response.statusCode).json(response.errorMessage);
             return;

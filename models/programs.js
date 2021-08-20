@@ -18,10 +18,13 @@ const programsSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User", //refer to the User model
     },
-    donators_id: [
+    donators: [
         {
-            type: Schema.Types.ObjectId,
-            ref: "User", //refer to the User model
+            donator_id: String,
+            donated_amount: {
+                type: Number,
+                required: true,
+            },
         },
     ],
     isVerified: {

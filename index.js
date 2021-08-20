@@ -6,7 +6,7 @@ const express = require("express");
 const cors = require('cors')
 const bodyParser = require("body-parser");
 
-const { login, register, getProgramById, homepage } = require("./routes");
+const { login, register, getProgramById, homepage, dashboard } = require("./routes");
 const { checkAuth } = require("./controllers/checkAuth");
 
 //MongoDB Atlas Connection
@@ -23,13 +23,12 @@ app.post("/register", register);
 app.post("/login", login);
 
 app.get("/homepage", checkAuth, homepage);
+app.get("/dashboard", checkAuth, dashboard)
 
 const programRouter = express.Router();
 programRouter.get("/:id", getProgramById);
 // app.use("/programs", checkAuth)
 app.use("/programs", programRouter);
-
-
 
 app.listen(process.env.PORT || port, () => {
     console.log(`ready - NINJA-BE is running on http://localhost:${port}`);
