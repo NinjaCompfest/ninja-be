@@ -20,6 +20,11 @@ async function homepage(req, res) {
     await controller.homepage(req, res);
 }
 
+async function dashboard(req, res) {
+    console.info("GET - /dashboard");
+    await controller.dashboard(req, res);
+}
+
 async function getProgramById(req, res) {
     console.info(`GET - /programs/${req.params.id}`);
     await controller.getProgramById(req, res);
@@ -29,5 +34,6 @@ module.exports = {
     register,
     login,
     homepage,
+    dashboard,
     getProgramById,
 };

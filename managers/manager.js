@@ -117,6 +117,40 @@ class Manager {
         }
     }
 
+    async dashboard(request) {
+        switch (request.user.user.role) {
+            case "DONOR":
+                const myPastDonations =
+                    await this.repository.getPastDonations(
+                        request.user.user._id
+                    );
+
+                if (myPastDonations === null || myPastDonations === undefined) {
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.NOT_FOUND,
+                        null,
+                        new ErrorMessage("There is no past donations found")
+                    );
+                }
+
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.OK,
+                    myPastDonations,
+                    null
+                );
+
+            case "FUNDRAISER":
+                break;
+
+            default:
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.NOT_FOUND,
+                    null,
+                    new ErrorMessage("There is no past donations found")
+                );
+        }
+    }
+
     async getProgramById(request) {
         const programs = await this.repository.getProgramById(request.id);
         if (programs === null || programs === undefined) {

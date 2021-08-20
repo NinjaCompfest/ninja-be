@@ -21,15 +21,38 @@ class Repository {
 
     async getUserByUsername(username) {
         const results = await users.find({ username }).exec();
-        if (results === []) {
+        if (results.length === 0) {
             return undefined;
         }
         return results[0];
     }
 
+    async getPastDonations(id) {
+        const pastDonations = await programs.aggregate([
+            { $unwind: "$donators" },
+            { $match: { "donators.donator_id": id } },
+            {
+                $project: {
+                    _id: 0,
+                    title: 1,
+                    donated_amount: "$donators.donated_amount",
+                },
+            },
+        ]);
+
+        if (pastDonations.length === 0) {
+            return undefined;
+        }
+        return pastDonations;
+    }
+
+    // Programs
     async getVerifiedPrograms() {
-        const results = await programs.find({ isVerified: true }).exec();
-        if (results === []) {
+        const results = await programs
+            .find({ isVerified: true })
+            .select({ _id: 0, title: 1, collected_amount: 1 })
+            .exec();
+        if (results.length === 0) {
             return undefined;
         }
         return results;
