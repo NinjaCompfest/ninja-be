@@ -42,7 +42,7 @@ app.use("/programs", programRouter);
 const userRouter = express.Router();
 userRouter.put("/:id/topup", topup);
 userRouter.put("/:id/donor", donor);
-app.use("/programs", checkAuth)
+app.use("/users", checkAuth)
 app.use("/users", userRouter);
 
 app.post("/:id/programs", checkAuth, addProgram);

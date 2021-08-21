@@ -21,6 +21,7 @@ const programsSchema = new Schema({
     donators: [
         {
             donator_id: String,
+            date: Date,
             donated_amount: {
                 type: Number,
                 required: true,

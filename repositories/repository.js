@@ -87,11 +87,29 @@ class Repository {
         await newProgram.save();
         return newProgram;
     }
-    async donorProgram(userId, programId, amount){
-        const program = await programs
-        .findOneAndUpdate(
-            {}
-        )
+
+    // TODO change to use transaction
+    async donorProgram(userId, programId, amount) {
+        const user = await User.findOneAndUpdate(
+            { _id: userId },
+            { $inc: { balance: -amount } },
+            { new: true }
+        ).exec();
+
+        const newDonator = {
+            donator_id: userId,
+            date: new Date(),
+            donated_amount: amount,
+        };
+        const program = await Program.findOneAndUpdate(
+            { _id: programId },
+            {
+                $push: { donators: newDonator },
+                $inc: { collected_amount: amount },
+            }
+        ).exec();
+
+        return true;
     }
 }
 
