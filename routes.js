@@ -39,6 +39,12 @@ async function addProgram(req, res) {
     await controller.addProgram(req, res);
 }
 
+async function donor(req, res){
+    console.info(`PUT - /users/${req.params.id}/donor`)
+    await controller.donor(req, res)
+}
+
+
 module.exports = {
     register,
     login,
@@ -47,4 +53,5 @@ module.exports = {
     getProgramById,
     topup,
     addProgram,
+    donor
 };

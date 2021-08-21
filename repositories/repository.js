@@ -87,6 +87,12 @@ class Repository {
         await newProgram.save();
         return newProgram;
     }
+    async donorProgram(userId, programId, amount){
+        const program = await programs
+        .findOneAndUpdate(
+            {}
+        )
+    }
 }
 
 module.exports = {
