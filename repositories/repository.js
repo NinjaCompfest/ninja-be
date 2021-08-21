@@ -66,21 +66,12 @@ class Repository {
     }
 
     async withdrawById(userId, programId, amount) {
-        await User.findOneAndUpdate(
-            { _id: userId },
-            { $inc: { balance: amount } },
-            { new: true }
-        ).exec();
-        const program = await Program.findOneAndUpdate(
-            { _id: programId },
-            { $inc: { collected_amount: -amount } },
-            { new: true }
-        ).exec();
         await Notification.create({
             type: "FUNDRAISE",
             type_id: userId,
-            amount: amount
-        })
+            program_id: program_id,
+            amount: amount,
+        });
 
         return program;
     }
@@ -132,6 +123,71 @@ class Repository {
 
         return user;
     }
+
+    async getAllNotifications() {
+        const notifications = await Notification.find({}).exec();
+        if (notifications.length === 0) {
+            return undefined;
+        }
+        return notifications;
+    }
+
+    async respondWithdrawal(notifId) {
+        const notif = await Notification.findById(notifId).exec();
+        await User.findOneAndUpdate(
+            { _id: userId },
+            { $inc: { balance: amount } },
+            { new: true }
+        ).exec();
+        const program = await Program.findOneAndUpdate(
+            { _id: notif.program_id },
+            { $inc: { collected_amount: -amount } },
+            { new: true }
+        ).exec();
+
+        if (program === null || program === undefined) {
+            return undefined;
+        }
+        return program;
+    }
+
+    async respondFundraise(notifId) {
+        const notification = await Notification.findById(notifId);
+        const userId = notification.type_id;
+        const verifiedUser = await User.findOneAndUpdate(
+            { userId },
+            { isVerified: true },
+            { new: true }
+        );
+        if (verifiedUser === null || verifiedUser === undefined) {
+            return undefined;
+        }
+        return verifiedUser;
+    }
+
+    async respondProgram(notifId) {
+        const notification = await Notification.findById(notifId);
+        const programId = notification.type_id;
+        const verifiedProgram = await Program.findOneAndUpdate(
+            { programId },
+            { isVerified: true },
+            { new: true }
+        );
+        if (verifiedProgram === null || verifiedProgram === undefined) {
+            return undefined;
+        }
+        return verifiedProgram;
+    }
+
+    async deleteNotificationById(notifId) {
+        const notification = await Notification.findOneAndDelete(notifId);
+        console.log(notification);
+        if (notification === null) {
+            return undefined;
+        }
+        return notification;
+    }
+
 }
 
 module.exports = {

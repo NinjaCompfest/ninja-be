@@ -131,7 +131,7 @@ class Manager {
 
                 if (myPastDonations === null || myPastDonations === undefined) {
                     return new ResponseDTO(
-                        httpStatusCode.StatusCodes.NOT_FOUND,
+                        httpStatusCode.StatusCodes.OK,
                         null,
                         new ErrorMessage("There is no past donations found")
                     );
@@ -204,7 +204,7 @@ class Manager {
             request.programId,
             request.amount
         );
-        if (!updatedUser) {
+        if (updatedUser === null || updatedUser === undefined) {
             return new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
                 null,
@@ -214,6 +214,76 @@ class Manager {
         return new ResponseDTO(
             httpStatusCode.StatusCodes.OK,
             updatedUser,
+            null
+        );
+    }
+
+    async getAllNotifications() {
+        const notifications = await this.repository.getAllNotifications();
+        if (notifications === null || notifications === undefined) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.NOT_FOUND,
+                null,
+                new ErrorMessage("failed to get all notifications")
+            );
+        }
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            notifications,
+            null
+        );
+    }
+
+    async respondToNotification(request) {
+        const { id, notifId, type, isAccepted } = request;
+        // TODO check authorization with id
+
+        let result;
+
+        switch (type) {
+            case "WITHDRAWAL":
+                if (isAccepted) {
+                    result = await this.repository.respondWithWithdrawal(
+                        notifId
+                    );
+                } else {
+                    result = { success: true };
+                }
+                break;
+
+            case "FUNDRAISE":
+                if (isAccepted) {
+                    result = await this.repository.respondFundraise(notifId);
+                } else {
+                    result = { success: true };
+                }
+                break;
+
+            case "PROGRAM":
+                if (isAccepted) {
+                    result = await this.repository.respondProgram(notifId);
+                } else {
+                    result = { success: true };
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        const deletedNotification =
+            this.repository.deletedNotification(notifId);
+
+        if (result === null || result === undefined) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.NOT_FOUND,
+                null,
+                new ErrorMessage("failed to respond notifications")
+            );
+        }
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            notifications,
             null
         );
     }

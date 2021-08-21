@@ -53,6 +53,16 @@ async function addProgram(req, res) {
     await controller.addProgram(req, res);
 }
 
+async function getAllNotifications(req, res) {
+    console.info(`GET - /admins/${req.params.id}/notifications`);
+    await controller.getAllNotifications(req, res);
+}
+
+async function respondToNotification(req, res) {
+    console.info(`PUT - /admins/${req.params.id}/notification/${req.params.notifId}`);
+    await controller.respondToNotification(req, res);
+}
+
 module.exports = {
     register,
     login,
@@ -64,4 +74,6 @@ module.exports = {
     topup,
     donor,
     addProgram,
+    getAllNotifications,
+    respondToNotification,
 };

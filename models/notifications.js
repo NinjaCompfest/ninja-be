@@ -8,6 +8,7 @@ const notificationSchema = new Schema({
         enum: ["WITHDRAWAL", "FUNDRAISE", "PROGRAM"],
     },
     type_id: { type: String, required: true },
+    program_id: String,
     amount: Number,
 });
 

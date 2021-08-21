@@ -17,6 +17,8 @@ const {
     topup,
     donor,
     addProgram,
+    getAllNotifications,
+    respondToNotification
 } = require("./routes");
 const { checkAuth } = require("./controllers/checkAuth");
 
@@ -48,8 +50,6 @@ userRouter.put("/:id/donor", donor);
 app.use("/users", checkAuth);
 app.use("/users", userRouter);
 
-// /fundraisers/:id/programs
-
 const fundraiserRouter = express.Router();
 fundraiserRouter.post("/:id/programs", addProgram)
 fundraiserRouter.get("/:id/programs", getVerifiedPrograms)
@@ -57,6 +57,12 @@ fundraiserRouter.get("/:userId/programs/:programId", getProgramById)
 fundraiserRouter.put("/:userId/programs/:programId/withdraw", withdrawById)
 app.use("/fundraisers/", checkAuth);
 app.use("/fundraisers/", fundraiserRouter);
+
+const adminRouter = express.Router();
+adminRouter.get("/:id/notifications", getAllNotifications)
+adminRouter.put("/:id/notifications", respondToNotification)
+app.use("/admins/", checkAuth)
+app.use("/admins/", adminRouter)
 
 app.listen(process.env.PORT || port, () => {
     console.log(`ready - NINJA-BE is running on http://localhost:${port}`);
