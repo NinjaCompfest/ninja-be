@@ -95,18 +95,27 @@ class Controller {
     }
 
     async addProgram(req, res) {
-        const { id } = req.params; //fundraiser (USER) id
+        const { id } = req.params; 
         const { title, description } = req.body;
         const request = new AddProgramRequestDTO(title, description, id);
         const response = await this.manager.addProgram(request);
-        console.log(response);
         if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        console.log("res body", response.body);
         res.status(httpStatusCode.StatusCodes.OK).json(response.body);
-        res.status(httpStatusCode.StatusCodes.OK)
+    }
+
+    async withdrawById(req, res){
+        const {userId, programId} = req.params
+        const {amount} = req.body
+        const request = new WithdrawRequestDTO(userId, programId, amount)
+        const response = await this.manager.withdrawById(request)
+        if(response.statusCode !== httpStatusCode.StatusCodes.OK){
+            res.status(response.statusCode).json(response.errorMessage)
+            return;
+        }
+        res.status(httpStatusCode.StatusCode.OK).json(response.body)
     }
 }
 

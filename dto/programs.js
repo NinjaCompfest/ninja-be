@@ -12,7 +12,16 @@ class AddProgramRequestDTO {
     }
 }
 
+class WithdrawRequestDTO {
+    constructor(userId, programId, amount) {
+        this.userId = userId;
+        this.programId = programId;
+        this.amount = amount;
+    }
+}
+
 module.exports = {
     ProgramsRequestDTO,
     AddProgramRequestDTO,
+    WithdrawRequestDTO,
 };

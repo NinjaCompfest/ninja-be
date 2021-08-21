@@ -11,6 +11,7 @@ const {
     register,
     getVerifiedPrograms,
     getProgramById,
+    withdrawById,
     dashboard,
     getUserIdentity,
     topup,
@@ -50,10 +51,12 @@ app.use("/users", userRouter);
 // /fundraisers/:id/programs
 
 const fundraiserRouter = express.Router();
+fundraiserRouter.post("/:id/programs", addProgram)
+fundraiserRouter.get("/:id/programs", getVerifiedPrograms)
+fundraiserRouter.get("/:userId/programs/:programId", getProgramById)
+fundraiserRouter.put("/userId/programs/:programId/withdraw", withdrawById)
 app.use("/fundraisers/", checkAuth);
 app.use("/fundraisers/", fundraiserRouter);
-
-app.post("/:id/programs", checkAuth, addProgram);
 
 app.listen(process.env.PORT || port, () => {
     console.log(`ready - NINJA-BE is running on http://localhost:${port}`);

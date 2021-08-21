@@ -100,6 +100,28 @@ class Manager {
         );
     }
 
+    async withdrawById(request) {
+        const { userId, programId, amount } = request;
+        const withdrawedProgram = await this.repository.withdrawById(
+            userId,
+            programId,
+            amount
+        );
+        if (withdrawedProgram === null || withdrawedProgram === undefined) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.NOT_FOUND,
+                null,
+                new ErrorMessage("withdraw failed!")
+            );
+        }
+
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            withdrawedProgram,
+            null
+        );
+    }
+
     async dashboard(request) {
         switch (request.user.user.role) {
             case "DONOR":
@@ -159,7 +181,11 @@ class Manager {
             );
         }
 
-        return new ResponseDTO(httpStatusCode.StatusCodes.OK, updatedUser, null);
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            updatedUser,
+            null
+        );
     }
 
     async addProgram(request) {
@@ -173,19 +199,23 @@ class Manager {
     }
 
     async donor(request) {
-        const isSuccess = await this.repository.donorProgram(
+        const updatedUser = await this.repository.donorProgram(
             request.userId,
             request.programId,
             request.amount
         );
-        if (!isSuccess) {
+        if (!updatedUser) {
             return new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
                 null,
                 new ErrorMessage("donor failed")
             );
         }
-        return new ResponseDTO(httpStatusCode.StatusCodes.OK, null, null);
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            updatedUser,
+            null
+        );
     }
 }
 

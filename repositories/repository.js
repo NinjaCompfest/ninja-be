@@ -64,6 +64,21 @@ class Repository {
         return result;
     }
 
+    async withdrawById(userId, programId, amount) {
+        const user = await User.findOneAndUpdate(
+            { _id: userId },
+            { $inc: { balance: amount } },
+            { new: true }
+        ).exec();
+        const program = await Program.findOneAndUpdate(
+            { _id: programId },
+            { $inc: { collected_amount: -amount } },
+            { new: true }
+        ).exec();
+
+        return program;
+    }
+
     async topupById(userId, amount) {
         const user = await User.findOneAndUpdate(
             { _id: userId },
@@ -109,7 +124,7 @@ class Repository {
             }
         ).exec();
 
-        return true;
+        return user;
     }
 }
 
