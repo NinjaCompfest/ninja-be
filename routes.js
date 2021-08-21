@@ -59,7 +59,7 @@ async function getAllNotifications(req, res) {
 }
 
 async function respondToNotification(req, res) {
-    console.info(`PUT - /admins/${req.params.id}/notification/${req.params.notifId}`);
+    console.info(`PUT - /admins/${req.params.id}/notifications/${req.params.notifId}`);
     await controller.respondToNotification(req, res);
 }
 

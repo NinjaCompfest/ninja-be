@@ -47,6 +47,17 @@ class Repository {
         return pastDonations;
     }
 
+    async getProgramByFundraiserId(fundraiserId) {
+        const myPrograms = await Program.find({
+            fundraiser_id: fundraiserId,
+            isVerified: true,
+        }).exec();
+        if (myPrograms.length === 0) {
+            return undefined;
+        }
+        return myPrograms;
+    }
+
     async getVerifiedPrograms() {
         const results = await Program.find({ isVerified: true })
             .select({ title: 1, collected_amount: 1 })
@@ -66,14 +77,17 @@ class Repository {
     }
 
     async withdrawById(userId, programId, amount) {
-        await Notification.create({
-            type: "FUNDRAISE",
+        const program = await Program.findOne({ _id: programId }).exec();
+
+        const notification = await Notification.create({
+            type: "WITHDRAWAL",
             type_id: userId,
-            program_id: program_id,
+            program_id: programId,
             amount: amount,
+            program_name: program.title,
         });
 
-        return program;
+        return notification;
     }
 
     async topupById(userId, amount) {
@@ -124,6 +138,14 @@ class Repository {
         return user;
     }
 
+    async addNotification(notifDTO) {
+        const newNotification = await Notification.create(notifDTO);
+        if (newNotification === null || newNotification === undefined) {
+            return undefined;
+        }
+        return newNotification;
+    }
+
     async getAllNotifications() {
         const notifications = await Notification.find({}).exec();
         if (notifications.length === 0) {
@@ -134,14 +156,20 @@ class Repository {
 
     async respondWithdrawal(notifId) {
         const notif = await Notification.findById(notifId).exec();
-        await User.findOneAndUpdate(
-            { _id: userId },
-            { $inc: { balance: amount } },
+        if (notif === null || notif === undefined) {
+            return undefined;
+        }
+        const user = await User.findOneAndUpdate(
+            { _id: notif.type_id },
+            { $inc: { balance: notif.amount } },
             { new: true }
         ).exec();
+        if (user === null || user === undefined) {
+            return undefined;
+        }
         const program = await Program.findOneAndUpdate(
             { _id: notif.program_id },
-            { $inc: { collected_amount: -amount } },
+            { $inc: { collected_amount: -notif.amount } },
             { new: true }
         ).exec();
 
@@ -153,12 +181,20 @@ class Repository {
 
     async respondFundraise(notifId) {
         const notification = await Notification.findById(notifId);
+        if (notification === null || notification === undefined) {
+            return undefined;
+        }
         const userId = notification.type_id;
+        if (userId === null || userId === undefined) {
+            return undefined;
+        }
         const verifiedUser = await User.findOneAndUpdate(
-            { userId },
+            { _id: userId },
             { isVerified: true },
             { new: true }
         );
+        console.log("verified",verifiedUser)
+
         if (verifiedUser === null || verifiedUser === undefined) {
             return undefined;
         }
@@ -167,9 +203,15 @@ class Repository {
 
     async respondProgram(notifId) {
         const notification = await Notification.findById(notifId);
+        if (notification === null || notification === undefined) {
+            return undefined;
+        }
         const programId = notification.type_id;
+        if (programId === null || programId === undefined) {
+            return undefined;
+        }
         const verifiedProgram = await Program.findOneAndUpdate(
-            { programId },
+            { _id: programId },
             { isVerified: true },
             { new: true }
         );
@@ -180,14 +222,15 @@ class Repository {
     }
 
     async deleteNotificationById(notifId) {
-        const notification = await Notification.findOneAndDelete(notifId);
-        console.log(notification);
+        console.log("notifId", notifId);
+        const notification = await Notification.findOneAndDelete({
+            _id: notifId,
+        });
         if (notification === null) {
             return undefined;
         }
         return notification;
     }
-
 }
 
 module.exports = {

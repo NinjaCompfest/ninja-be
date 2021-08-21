@@ -3,6 +3,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { ResponseDTO, ErrorMessage } = require("../dto/response");
 const { LoginResponseDTO } = require("../dto/login");
+const {
+    NotifRequestDTO,
+    FundraiseNotif,
+    ProgramsNotif,
+    WithdrawalNotif,
+} = require("../dto/notification");
 
 class Manager {
     constructor(repository) {
@@ -18,7 +24,9 @@ class Manager {
         if (newUser === null || newUser === undefined) {
             const response = new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
-                null,
+                new ErrorMessage(
+                    "failed to register, perhaps the user already exist"
+                ),
                 new ErrorMessage(
                     "failed to register, perhaps the user already exist"
                 )
@@ -41,6 +49,20 @@ class Manager {
         }
 
         if (request.role === "FUNDRAISER") {
+            const newNotif = new FundraiseNotif(
+                "FUNDRAISE",
+                newUser._id,
+                newUser.username,
+                newUser.full_name
+            );
+            const response = this.repository.addNotification(newNotif);
+            if (response === null || response === undefined) {
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.NOT_FOUND,
+                    null,
+                    new ErrorMessage("failed to notify admin")
+                );
+            }
             return new ResponseDTO(
                 httpStatusCode.StatusCodes.OK,
                 { message: "Wait for admin" },
@@ -51,12 +73,18 @@ class Manager {
 
     async login(request) {
         const user = await this.repository.getUserByUsername(request.username);
-
         if (user === null || user === undefined) {
             return new ResponseDTO(
-                httpStatusCode.StatusCodes.NOT_FOUND,
+                httpStatusCode.StatusCodes.BAD_REQUEST,
                 null,
                 new ErrorMessage("user not found")
+            );
+        }
+        if (user.role === "FUNDRAISER" && !user.isVerified) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.BAD_REQUEST,
+                null,
+                new ErrorMessage("waiting for admin")
             );
         }
 
@@ -71,6 +99,8 @@ class Manager {
         }
 
         user.password = undefined;
+        user.balance = undefined;
+        user.isVerified = undefined;
         const maxAge = 24 * 60 * 60;
         const jwtToken = jwt.sign({ user }, process.env.JWT_KEY, {
             expiresIn: maxAge,
@@ -83,21 +113,61 @@ class Manager {
         );
     }
 
-    async getVerifiedPrograms() {
-        const verifiedPrograms = await this.repository.getVerifiedPrograms();
-        if (verifiedPrograms === null || verifiedPrograms === undefined) {
+    async getUserIdentity(username) {
+        const user = await this.repository.getUserByUsername(username);
+        if (user === null || user === undefined) {
             return new ResponseDTO(
-                httpStatusCode.StatusCodes.NOT_FOUND,
+                httpStatusCode.StatusCodes.OK,
                 null,
-                new ErrorMessage("There is no verified Programs found")
+                new ErrorMessage("user not found")
             );
         }
+        return new ResponseDTO(httpStatusCode.StatusCodes.OK, user, null);
+    }
 
-        return new ResponseDTO(
-            httpStatusCode.StatusCodes.OK,
-            verifiedPrograms,
-            null
-        );
+    async getVerifiedPrograms(request) {
+        switch (request.user.role) {
+            case "FUNDRAISER":
+                const myPrograms =
+                    await this.repository.getProgramByFundraiserId(
+                        request.user._id
+                    );
+
+                if (myPrograms === null || myPrograms === undefined) {
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        null,
+                        new ErrorMessage("There is no programs found")
+                    );
+                }
+
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.OK,
+                    myPrograms,
+                    null
+                );
+
+            case "DONOR":
+                const verifiedPrograms =
+                    await this.repository.getVerifiedPrograms();
+                if (
+                    verifiedPrograms === null ||
+                    verifiedPrograms === undefined
+                ) {
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        null,
+                        new ErrorMessage("There is no verified Programs found")
+                    );
+                }
+
+            default:
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.OK,
+                    verifiedPrograms,
+                    null
+                );
+        }
     }
 
     async withdrawById(request) {
@@ -107,6 +177,7 @@ class Manager {
             programId,
             amount
         );
+
         if (withdrawedProgram === null || withdrawedProgram === undefined) {
             return new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
@@ -142,9 +213,6 @@ class Manager {
                     myPastDonations,
                     null
                 );
-
-            case "FUNDRAISER":
-                break;
 
             default:
                 return new ResponseDTO(
@@ -189,12 +257,21 @@ class Manager {
     }
 
     async addProgram(request) {
-        const { title, description, id } = request;
+        const { title, description, id, full_name } = request;
         const newProgram = await this.repository.addProgram(
             title,
             description,
             id
         );
+        const newNotif = new ProgramsNotif(
+            "PROGRAM",
+            newProgram._id,
+            newProgram._id,
+            title,
+            full_name
+        );
+        const response = await this.repository.addNotification(newNotif);
+
         return new ResponseDTO(httpStatusCode.StatusCodes.OK, newProgram, null);
     }
 
@@ -238,54 +315,103 @@ class Manager {
         const { id, notifId, type, isAccepted } = request;
         // TODO check authorization with id
 
-        let result;
-
         switch (type) {
             case "WITHDRAWAL":
                 if (isAccepted) {
-                    result = await this.repository.respondWithWithdrawal(
+                    const result = await this.repository.respondWithdrawal(
                         notifId
                     );
+                    if (result === null || result === undefined) {
+                        return new ResponseDTO(
+                            httpStatusCode.StatusCodes.NOT_FOUND,
+                            null,
+                            new ErrorMessage("failed to respond notifications")
+                        );
+                    }
+                    const deletedNotification =
+                        await this.repository.deleteNotificationById(notifId);
+
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        result,
+                        null
+                    );
                 } else {
-                    result = { success: true };
+                    const deletedNotification =
+                        await this.repository.deleteNotificationById(notifId);
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        deletedNotification,
+                        null
+                    );
                 }
-                break;
 
             case "FUNDRAISE":
                 if (isAccepted) {
-                    result = await this.repository.respondFundraise(notifId);
+                    const result = await this.repository.respondFundraise(
+                        notifId
+                    );
+                    if (result === null || result === undefined) {
+                        return new ResponseDTO(
+                            httpStatusCode.StatusCodes.NOT_FOUND,
+                            null,
+                            new ErrorMessage("failed to respond notifications")
+                        );
+                    }
+                    const deletedNotification =
+                        await this.repository.deleteNotificationById(notifId);
+
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        result,
+                        null
+                    );
                 } else {
-                    result = { success: true };
+                    const deletedNotification =
+                        await this.repository.deleteNotificationById(notifId);
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        deletedNotification,
+                        null
+                    );
                 }
-                break;
 
             case "PROGRAM":
                 if (isAccepted) {
-                    result = await this.repository.respondProgram(notifId);
+                    const result = await this.repository.respondProgram(
+                        notifId
+                    );
+                    if (result === null || result === undefined) {
+                        return new ResponseDTO(
+                            httpStatusCode.StatusCodes.NOT_FOUND,
+                            null,
+                            new ErrorMessage("failed to respond notifications")
+                        );
+                    }
+                    const deletedNotification =
+                        await this.repository.deleteNotificationById(notifId);
+
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        result,
+                        null
+                    );
                 } else {
-                    result = { success: true };
+                    const deletedNotification =
+                        await this.repository.deleteNotificationById(notifId);
+                    return new ResponseDTO(
+                        httpStatusCode.StatusCodes.OK,
+                        deletedNotification,
+                        null
+                    );
                 }
-                break;
-
             default:
-                break;
+                return new ResponseDTO(
+                    httpStatusCode.StatusCodes.OK,
+                    new ErrorMessage("wrong body format!"),
+                    null
+                );
         }
-
-        const deletedNotification =
-            this.repository.deletedNotification(notifId);
-
-        if (result === null || result === undefined) {
-            return new ResponseDTO(
-                httpStatusCode.StatusCodes.NOT_FOUND,
-                null,
-                new ErrorMessage("failed to respond notifications")
-            );
-        }
-        return new ResponseDTO(
-            httpStatusCode.StatusCodes.OK,
-            notifications,
-            null
-        );
     }
 }
 

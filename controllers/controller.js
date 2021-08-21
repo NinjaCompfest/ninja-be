@@ -47,7 +47,7 @@ class Controller {
     }
 
     async getVerifiedPrograms(req, res) {
-        const response = await this.manager.getVerifiedPrograms();
+        const response = await this.manager.getVerifiedPrograms(req.user);
         if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
             res.status(response.statusCode).json(response.errorMessage);
             return;
@@ -76,9 +76,13 @@ class Controller {
     }
 
     async getUserIdentity(req, res) {
-        const { full_name, username, balance } = req.user.user;
-        const response = new UsersResponseDTO(full_name, username, balance);
-        res.status(httpStatusCode.StatusCodes.OK).json(response);
+        const { username } = req.user.user;
+        const response = await this.manager.getUserIdentity(username)
+        if(response.statusCode !== httpStatusCode.StatusCodes.OK){
+            res.status(response.statusCode).json(response.errorMessage);
+            return;
+        }
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
     async topup(req, res) {
         const request = new TopupRequestDTO(req.params.id, req.body.amount);
@@ -92,7 +96,7 @@ class Controller {
     async donor(req, res) {
         const request = new DonorRequestDTO(
             req.params.id,
-            req.body.program_id,
+            req.body.programId,
             req.body.amount
         );
         const response = await this.manager.donor(request);
@@ -104,9 +108,11 @@ class Controller {
     }
 
     async addProgram(req, res) {
+        // res.(200)
+        const full_name = req.user.user.full_name
         const { id } = req.params;
         const { title, description } = req.body;
-        const request = new AddProgramRequestDTO(title, description, id);
+        const request = new AddProgramRequestDTO(title, description, id, full_name);
         const response = await this.manager.addProgram(request);
         if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
             res.status(response.statusCode).json(response.errorMessage);

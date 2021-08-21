@@ -5,10 +5,11 @@ class ProgramsRequestDTO {
 }
 
 class AddProgramRequestDTO {
-    constructor(title, description, id) {
+    constructor(title, description, id, full_name) {
         this.title = title;
         this.description = description;
         this.id = id;
+        this.full_name = full_name
     }
 }
 

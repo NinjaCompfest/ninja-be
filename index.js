@@ -60,7 +60,7 @@ app.use("/fundraisers/", fundraiserRouter);
 
 const adminRouter = express.Router();
 adminRouter.get("/:id/notifications", getAllNotifications)
-adminRouter.put("/:id/notifications", respondToNotification)
+adminRouter.put("/:id/notifications/:notifId", respondToNotification)
 app.use("/admins/", checkAuth)
 app.use("/admins/", adminRouter)
 
