@@ -9,8 +9,8 @@ const bodyParser = require("body-parser");
 const {
     login,
     register,
+    getVerifiedPrograms,
     getProgramById,
-    homepage,
     dashboard,
     getUserIdentity,
     topup,
@@ -32,10 +32,10 @@ app.use(bodyParser.json());
 app.post("/register", register);
 app.post("/login", login);
 
-app.get("/homepage", checkAuth, homepage);
 app.get("/dashboard", checkAuth, dashboard);
 
 const programRouter = express.Router();
+programRouter.get("/", getVerifiedPrograms);
 programRouter.get("/:id", getProgramById);
 app.use("/programs", checkAuth);
 app.use("/programs", programRouter);

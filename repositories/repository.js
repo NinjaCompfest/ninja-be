@@ -48,7 +48,7 @@ class Repository {
 
     async getVerifiedPrograms() {
         const results = await Program.find({ isVerified: true })
-            .select({ _id: 0, title: 1, collected_amount: 1 })
+            .select({ title: 1, collected_amount: 1 })
             .exec();
         if (results.length === 0) {
             return undefined;

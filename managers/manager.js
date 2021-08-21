@@ -83,38 +83,21 @@ class Manager {
         );
     }
 
-    async homepage(request) {
-        switch (request.user.user.role) {
-            case "DONOR":
-                const verifiedPrograms =
-                    await this.repository.getVerifiedPrograms();
-                if (
-                    verifiedPrograms === null ||
-                    verifiedPrograms === undefined
-                ) {
-                    return new ResponseDTO(
-                        httpStatusCode.StatusCodes.NOT_FOUND,
-                        null,
-                        new ErrorMessage("There is no verified Programs found")
-                    );
-                }
-
-                return new ResponseDTO(
-                    httpStatusCode.StatusCodes.OK,
-                    verifiedPrograms,
-                    null
-                );
-
-            // case "FUNDRAISER":
-            //     break;
-
-            default:
-                return new ResponseDTO(
-                    httpStatusCode.StatusCodes.NOT_FOUND,
-                    null,
-                    new ErrorMessage("There is no verified Programs found")
-                );
+    async getVerifiedPrograms() {
+        const verifiedPrograms = await this.repository.getVerifiedPrograms();
+        if (verifiedPrograms === null || verifiedPrograms === undefined) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.NOT_FOUND,
+                null,
+                new ErrorMessage("There is no verified Programs found")
+            );
         }
+
+        return new ResponseDTO(
+            httpStatusCode.StatusCodes.OK,
+            verifiedPrograms,
+            null
+        );
     }
 
     async dashboard(request) {
