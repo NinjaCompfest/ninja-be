@@ -30,20 +30,22 @@ async function getProgramById(req, res) {
     await controller.getProgramById(req, res);
 }
 
+async function getUserIdentity(req, res){
+    console.info(`GET - /users`);
+    await controller.getUserIdentity(req, res)
+}
 async function topup(req, res) {
     console.info(`PUT - /users/${req.params.id}/topup`);
     await controller.topup(req, res);
 }
-
-async function addProgram(req, res) {
-    await controller.addProgram(req, res);
-}
-
 async function donor(req, res){
     console.info(`PUT - /users/${req.params.id}/donor`)
     await controller.donor(req, res)
 }
 
+async function addProgram(req, res) {
+    await controller.addProgram(req, res);
+}
 
 module.exports = {
     register,
@@ -51,7 +53,8 @@ module.exports = {
     homepage,
     dashboard,
     getProgramById,
+    getUserIdentity,
     topup,
+    donor,
     addProgram,
-    donor
 };

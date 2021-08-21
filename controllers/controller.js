@@ -6,6 +6,7 @@ const { DashboardRequestDTO } = require("../dto/dashboard");
 const { ProgramsRequestDTO, AddProgramRequestDTO } = require("../dto/programs");
 const { TopupRequestDTO } = require("../dto/topup");
 const { DonorRequestDTO } = require("../dto/donor");
+const { UsersRequestDTO, UsersResponseDTO } = require("../dto/users") 
 
 class Controller {
     constructor(manager) {
@@ -71,6 +72,11 @@ class Controller {
         res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 
+    async getUserIdentity(req, res){
+        const {full_name, username, balance} = req.user.user
+        const response = new UsersResponseDTO(full_name, username, balance)
+        res.status(httpStatusCode.StatusCodes.OK).json(response)
+    }
     async topup(req, res) {
         const request = new TopupRequestDTO(req.params.id, req.body.amount);
         const response = await this.manager.topup(request);
@@ -79,6 +85,15 @@ class Controller {
             return;
         }
         res.status(httpStatusCode.StatusCodes.OK).json(response.body);
+    }
+    async donor(req, res) {
+        const request = new DonorRequestDTO(req.params.id, req.body.program_id, req.body.amount);
+        const response = await this.manager.donor(request);
+        if (response.StatusCode !== httpStatusCode.StatusCodes.OK){
+            res.status(response.statusCode).json(response.errorMessage);
+            return;
+        }
+        res.status(httpStatusCode.StatusCodes.OK)
     }
 
     async addProgram(req, res) {
@@ -93,16 +108,6 @@ class Controller {
         }
         console.log("res body", response.body);
         res.status(httpStatusCode.StatusCodes.OK).json(response.body);
-        res.status(httpStatusCode.StatusCodes.OK)
-    }
-
-    async donor(req, res) {
-        const request = new DonorRequestDTO(req.params.id, req.body.program_id, req.body.amount);
-        const response = await this.manager.donor(request);
-        if (response.StatusCode !== httpStatusCode.StatusCodes.OK){
-            res.status(response.statusCode).json(response.errorMessage);
-            return;
-        }
         res.status(httpStatusCode.StatusCodes.OK)
     }
 }

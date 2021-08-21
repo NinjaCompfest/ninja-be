@@ -12,9 +12,10 @@ const {
     getProgramById,
     homepage,
     dashboard,
+    getUserIdentity,
     topup,
-    addProgram,
     donor,
+    addProgram,
 } = require("./routes");
 const { checkAuth } = require("./controllers/checkAuth");
 
@@ -36,13 +37,14 @@ app.get("/dashboard", checkAuth, dashboard);
 
 const programRouter = express.Router();
 programRouter.get("/:id", getProgramById);
-app.use("/programs", checkAuth)
+app.use("/programs", checkAuth);
 app.use("/programs", programRouter);
 
 const userRouter = express.Router();
+userRouter.get("/", getUserIdentity);
 userRouter.put("/:id/topup", topup);
 userRouter.put("/:id/donor", donor);
-app.use("/users", checkAuth)
+app.use("/users", checkAuth);
 app.use("/users", userRouter);
 
 app.post("/:id/programs", checkAuth, addProgram);
