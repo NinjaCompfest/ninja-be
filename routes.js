@@ -35,11 +35,18 @@ async function topup(req, res){
     await controller.topup(req, res)
 }
 
+async function donor(req, res){
+    console.info(`PUT - /users/${req.params.id}/donor`)
+    await controller.donor(req, res)
+}
+
+
 module.exports = {
     register,
     login,
     homepage,
     dashboard,
     getProgramById,
-    topup
+    topup,
+    donor
 };

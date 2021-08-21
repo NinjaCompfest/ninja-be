@@ -5,6 +5,7 @@ const { HomepageRequestDTO } = require("../dto/homepage");
 const { DashboardRequestDTO } = require("../dto/dashboard");
 const { ProgramsRequestDTO } = require("../dto/programs");
 const { TopupRequestDTO } = require("../dto/topup");
+const { DonorRequestDTO } = require("../dto/donor");
 
 class Controller {
     constructor(manager) {
@@ -25,7 +26,7 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
+        res.status(httpStatusCode.StatusCodes.CREATED).send(
             JSON.stringify(response.body)
         );
     }
@@ -51,8 +52,8 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JSON.stringify(response.body)
+        res.status(httpStatusCode.StatusCodes.OK).json(
+            response.body
         );
     }
 
@@ -87,9 +88,17 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage);
             return;
         }
-        res.status(httpStatusCode.StatusCodes.OK).send(
-            JOSN.stringify(response.body)
-        );
+        res.status(httpStatusCode.StatusCodes.OK)
+    }
+
+    async donor(req, res) {
+        const request = new DonorRequestDTO(req.params.id, req.body.program_id, req.body.amount);
+        const response = await this.manager.donor(request);
+        if (response.StatusCode !== httpStatusCode.StatusCodes.OK){
+            res.status(response.statusCode).json(response.errorMessage);
+            return;
+        }
+        res.status(httpStatusCode.StatusCodes.OK)
     }
 }
 

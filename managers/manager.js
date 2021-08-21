@@ -178,6 +178,22 @@ class Manager {
 
         return new ResponseDTO(httpStatusCode.StatusCodes.OK, null, null);
     }
+
+    async donor(request) {
+        const isSuccess = await this.repository.donorProgram(
+            request.userId,
+            request.programId,
+            request.amount
+        );
+        if (!isSuccess) {
+            return new ResponseDTO(
+                httpStatusCode.StatusCodes.NOT_FOUND,
+                null,
+                new ErrorMessage("donor failed")
+            );
+        }
+        return new ResponseDTO(httpStatusCode.StatusCodes.OK, null, null);
+    }
 }
 
 module.exports = {
