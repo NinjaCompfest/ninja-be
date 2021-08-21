@@ -1,12 +1,11 @@
 const httpStatusCode = require("http-status-codes");
 const { LoginRequestDTO } = require("../dto/login");
 const { RegisterRequestDTO } = require("../dto/register");
-const { HomepageRequestDTO } = require("../dto/homepage");
 const { DashboardRequestDTO } = require("../dto/dashboard");
 const { ProgramsRequestDTO, AddProgramRequestDTO } = require("../dto/programs");
 const { TopupRequestDTO } = require("../dto/topup");
 const { DonorRequestDTO } = require("../dto/donor");
-const { UsersRequestDTO, UsersResponseDTO } = require("../dto/users") 
+const { UsersResponseDTO } = require("../dto/users") 
 
 class Controller {
     constructor(manager) {
@@ -42,9 +41,8 @@ class Controller {
         res.status(httpStatusCode.StatusCodes.OK).json(response.body);
     }
 
-    async homepage(req, res) {
-        const request = new HomepageRequestDTO(req.user);
-        const response = await this.manager.homepage(request);
+    async getVerifiedPrograms(req, res) {
+        const response = await this.manager.getVerifiedPrograms();
         if (response.statusCode !== httpStatusCode.StatusCodes.OK) {
             res.status(response.statusCode).json(response.errorMessage);
             return;
