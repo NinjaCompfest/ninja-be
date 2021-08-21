@@ -147,11 +147,11 @@ class Manager {
     }
 
     async topup(request) {
-        const newBalance = await this.repository.topupById(
+        const updatedUser = await this.repository.topupById(
             request.userId,
             request.amount
         );
-        if (newBalance === null || newBalance === undefined) {
+        if (updatedUser === null || updatedUser === undefined) {
             return new ResponseDTO(
                 httpStatusCode.StatusCodes.NOT_FOUND,
                 null,
@@ -159,7 +159,7 @@ class Manager {
             );
         }
 
-        return new ResponseDTO(httpStatusCode.StatusCodes.OK, null, null);
+        return new ResponseDTO(httpStatusCode.StatusCodes.OK, updatedUser, null);
     }
 
     async addProgram(request) {

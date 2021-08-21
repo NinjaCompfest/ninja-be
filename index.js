@@ -47,6 +47,12 @@ userRouter.put("/:id/donor", donor);
 app.use("/users", checkAuth);
 app.use("/users", userRouter);
 
+// /fundraisers/:id/programs
+
+const fundraiserRouter = express.Router();
+app.use("/fundraisers/", checkAuth);
+app.use("/fundraisers/", fundraiserRouter);
+
 app.post("/:id/programs", checkAuth, addProgram);
 
 app.listen(process.env.PORT || port, () => {
