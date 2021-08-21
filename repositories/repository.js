@@ -1,5 +1,6 @@
 const User = require("../models/users");
 const Program = require("../models/programs");
+const Notification = require("../models/notifications");
 
 class Repository {
     constructor() {}
@@ -65,7 +66,7 @@ class Repository {
     }
 
     async withdrawById(userId, programId, amount) {
-        const user = await User.findOneAndUpdate(
+        await User.findOneAndUpdate(
             { _id: userId },
             { $inc: { balance: amount } },
             { new: true }
@@ -75,6 +76,11 @@ class Repository {
             { $inc: { collected_amount: -amount } },
             { new: true }
         ).exec();
+        await Notification.create({
+            type: "FUNDRAISE",
+            type_id: userId,
+            amount: amount
+        })
 
         return program;
     }
@@ -116,7 +122,7 @@ class Repository {
             date: new Date(),
             donated_amount: amount,
         };
-        const program = await Program.findOneAndUpdate(
+        await Program.findOneAndUpdate(
             { _id: programId },
             {
                 $push: { donators: newDonator },

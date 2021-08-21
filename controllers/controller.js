@@ -2,7 +2,7 @@ const httpStatusCode = require("http-status-codes");
 const { LoginRequestDTO } = require("../dto/login");
 const { RegisterRequestDTO } = require("../dto/register");
 const { DashboardRequestDTO } = require("../dto/dashboard");
-const { ProgramsRequestDTO, AddProgramRequestDTO } = require("../dto/programs");
+const { ProgramsRequestDTO, AddProgramRequestDTO, WithdrawRequestDTO } = require("../dto/programs");
 const { TopupRequestDTO } = require("../dto/topup");
 const { DonorRequestDTO } = require("../dto/donor");
 const { UsersResponseDTO } = require("../dto/users") 
@@ -115,7 +115,7 @@ class Controller {
             res.status(response.statusCode).json(response.errorMessage)
             return;
         }
-        res.status(httpStatusCode.StatusCode.OK).json(response.body)
+        res.status(httpStatusCode.StatusCodes.OK).json(response.body)
     }
 }
 

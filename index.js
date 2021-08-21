@@ -54,7 +54,7 @@ const fundraiserRouter = express.Router();
 fundraiserRouter.post("/:id/programs", addProgram)
 fundraiserRouter.get("/:id/programs", getVerifiedPrograms)
 fundraiserRouter.get("/:userId/programs/:programId", getProgramById)
-fundraiserRouter.put("/userId/programs/:programId/withdraw", withdrawById)
+fundraiserRouter.put("/:userId/programs/:programId/withdraw", withdrawById)
 app.use("/fundraisers/", checkAuth);
 app.use("/fundraisers/", fundraiserRouter);
 
